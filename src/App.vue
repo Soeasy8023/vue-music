@@ -1,18 +1,22 @@
 <template>
   <div id="app">
-    hello world
+    <m-header></m-header>
+    <tab></tab>
+    <router-view></router-view>
   </div>
 </template>
 
 <script>
-export default {
-  name: 'App'
-}
+  import MHeader from 'components/m-header/m-header'
+  import Tab from 'components/tab/tab'
+  export default {
+    name: 'App',
+    components:{
+      MHeader,
+      Tab
+    }
+  }
 </script>
 
 <style scoped lang="less">
-  @import "common/styles/variable";
-  #app{
-    color:@color-theme
-  }
 </style>
