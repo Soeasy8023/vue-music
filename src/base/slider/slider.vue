@@ -106,6 +106,10 @@
           this.slider.next();
         }, this.interval)
       }
+    },
+    // 销毁计时器事件
+    destroyed() {
+      clearTimeout(this.timer)
     }
   }
 </script>

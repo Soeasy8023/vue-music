@@ -10,6 +10,13 @@ const HtmlWebpackPlugin = require('html-webpack-plugin')
 const FriendlyErrorsPlugin = require('friendly-errors-webpack-plugin')
 const portfinder = require('portfinder')
 
+const express = require('express')   //引入express框架模块
+var axios = require('axios')            //引入axios模块
+var app = express()                    //实例化express
+var apiRoutes= express.Router()            //设置路由
+app.use('api',apiRoutes)            //将路由地址PI注册路由
+
+
 const HOST = process.env.HOST
 const PORT = process.env.PORT && Number(process.env.PORT)
 
@@ -42,6 +49,24 @@ const devWebpackConfig = merge(baseWebpackConfig, {
     quiet: true, // necessary for FriendlyErrorsPlugin
     watchOptions: {
       poll: config.dev.poll,
+    },
+    before(app) {
+      app.get('/api/getDiscList', function(req, res) {    //
+        var url = 'https://c.y.qq.com/splcloud/fcgi-bin/fcg_get_diss_by_tag.fcg' // 原api
+        axios.get(url, {
+          headers: {
+            referer: 'https://c.y.qq.com/',
+            host: 'c.y.qq.com'                //访问的域名
+          },
+          params: req.query                //req.query我打印过是url的data参数
+        }).then((response) => {
+
+          res.json(response.data)            //发送一个JSON响应
+
+        }).catch((e) => {
+          console.log(e)
+        })
+      })
     }
   },
   plugins: [

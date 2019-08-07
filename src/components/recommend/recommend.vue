@@ -1,12 +1,13 @@
 <template>
   <div class="recommend" ref="recommend">
-    <!--<scroll ref="scroll" class="recommend-content" :data="discList">-->
+    <scroll ref="scroll" class="recommend-content" :data="discList">
       <div>
         <div v-if="recommends.length" class="slider-wrapper" ref="sliderWrapper">
           <slider>
             <div v-for="item in recommends">
               <a :href="item.linkUrl">
-                <img class="needsclick"  :src="item.picUrl">
+                <!--needsclick用来解决,横向滚动和纵向滚动点击事件冲突-->
+                <img class="needsclick" :load="loadImage"  :src="item.picUrl">
               </a>
             </div>
           </slider>
@@ -26,17 +27,19 @@
           </ul>
         </div>
       </div>
-      <!--<div class="loading-container" v-show="!discList.length">-->
-        <!--<loading></loading>-->
-      <!--</div>-->
-    <!--</scroll>-->
+      <div class="loading-container" v-show="!discList.length">
+        <loading></loading>
+      </div>
+    </scroll>
     <router-view></router-view>
   </div>
 </template>
 
 <script type="text/ecmascript-6">
   import Slider from 'base/slider/slider'
-  import {getRecommend} from 'api/recommend'
+  import Scroll from 'base/scroll/scroll'
+  import Loading from 'base/loading/loading'
+  import {getRecommend,getDiscList} from 'api/recommend'
   import {ERR_OK} from 'api/config'
 
   export default {
@@ -48,8 +51,10 @@
     },
     created() {
       this._getRecommend()
+      this._getDiscList()
     },
     methods: {
+      //slide轮播图请求
       _getRecommend() {
         getRecommend().then((res) => {
           if (res.code === ERR_OK) {
@@ -57,9 +62,26 @@
           }
         })
       },
+      //歌单请求
+      _getDiscList() {
+        getDiscList().then((res) => {
+          if (res.code === ERR_OK) {
+            this.discList=res.data.list
+          }
+        })
+      },
+      loadImage(){
+        if(!this.checkLoaded){
+          this.$ref.scroll.refresh();
+          this.checkLoaded=true;
+        }
+
+      }
     },
     components: {
       Slider,
+      Scroll,
+      Loading
     }
   }
 </script>
